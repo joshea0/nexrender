@@ -5,7 +5,7 @@ const fs        = require('fs-extra');
 const async     = require('async');
 
 function getAllExpressions(data) {
-    return data.match(/\<expr bdata=\"([a-f0-9]+)\"\s*\/\>/gi);
+    return data.match(/fullpath=\"(?:(?:[A-Z]\:|~){0,1}(?:\/|\\\\|\\)(?=[^\s\/]))(?:(?:[\ a-zA-Z0-9\+\-\_\.\$\●\-\(\)]+(?:\/|\\\\|\\)))*/gi);
 }
 
 /**
@@ -15,11 +15,11 @@ function getAllExpressions(data) {
  *     "/Users/Name/Projects/MyProject/"
  *     "C:\\Projects\\MyNewProject\\"
  *     "/usr/var/tmp/projects/123/"
- * 
+ *
  * And will replace them to string `dst`
  */
 function replacePath(src, dst) {
-    return src.replace( /(?:(?:[A-Z]\:|~){0,1}(?:\/|\\\\|\\)(?=[^\s\/]))(?:(?:[\ a-zA-Z0-9\+\-\_\.\$\●\-]+(?:\/|\\\\|\\)))*/gm, dst);
+    return src.replace( /(?:(?:[A-Z]\:|~){0,1}(?:\/|\\\\|\\)(?=[^\s\/]))(?:(?:[\ a-zA-Z0-9\+\-\_\.\$\●\-\(\)]+(?:\/|\\\\|\\)))*/gm, dst);
 }
 
 function processTemplateFile(project, callback) {
@@ -49,19 +49,22 @@ function processTemplateFile(project, callback) {
             // then iterate over them
             for (let expr of expressions) {
 
-                // extract hex from xml tag and decode it
-                let hex = expr.split('"')[1];
-                let dec = new Buffer(hex, 'hex').toString('utf8');
-    
-                // do patch and encode back to hex
-                // using regex file path pattern
-                let enc = new Buffer( replacePath( dec, replaceToPath ) ).toString('hex');
-    
-                // replace patched hex
-                data = data.replace( hex, enc );
+                // extract original path from xml tag
+                let oldpath = expr.split('"')[1];
+
+                console.log('--------')
+                console.log(expr);
+                console.log('--------')
+                console.log(oldpath);
+                console.log('--------')
+                console.log(replaceToPath);
+                console.log('--------')
+
+                // replace with new file path
+                data = data.replace( oldpath, replaceToPath );
             }
         }
-        
+
         // save result
         fs.writeFile(projectName, data, callback);
     });
@@ -77,10 +80,10 @@ module.exports = function(project) {
 
         console.info(`[${project.uid}] patching project...`);
 
-        // Iterate over assets, 
-        // skip those that are not data/script files, 
+        // Iterate over assets,
+        // skip those that are not data/script files,
         for (let asset of project.assets) {
-            if (['script', 'data'].indexOf(asset.type) === -1) continue;
+            if (['script', 'data', 's3'].indexOf(asset.type) === -1) continue;
 
             return processTemplateFile(project, (err) => {
                 return (err) ? reject(err) : resolve(project);
