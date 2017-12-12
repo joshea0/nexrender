@@ -3,7 +3,7 @@
 const fs        = require('fs-extra');
 const path      = require('path');
 const async     = require('async');
-const ffmpeg = require('fluent-ffmpeg');
+const ffmpeg    = require('fluent-ffmpeg');
 
 const RESULTS_DIR = process.env.RESULTS_DIR || 'results';
 
