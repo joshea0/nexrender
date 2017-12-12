@@ -30,7 +30,13 @@ module.exports = function(project) {
             if (err) {
                 reject(err);
             } if (data) {
-                console.log("Upload Success", data.Location);
+                console.log(`[${project.uid}]  Upload Success`, data.Location);
+
+                console.info(`[${project.uid}] deleting local copy of result video...`);
+
+                fs.remove( resultFile, (err) => {
+                    return (err) ? reject(err) : resolve(project);
+                })
                 resolve(project);
             }
         });
