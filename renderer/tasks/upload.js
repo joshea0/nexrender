@@ -13,7 +13,7 @@ module.exports = function(project) {
     return new Promise((resolve, reject) => {
 
         console.info(`[${project.uid}] upload results file...`);
-        let resultFile = path.join( RESULTS_DIR, project.uid + '_' + project.resultname );
+        let resultFile = path.join( RESULTS_DIR, project.uid + '_encoded.mp4' );
 
         var s3 = new AWS.S3();
         var fileStream = fs.createReadStream(resultFile);
@@ -21,7 +21,7 @@ module.exports = function(project) {
           console.log('File Error', err);
         });
         var uploadParams = {
-            Bucket: process.env.S3_RESULTS_BUCKET || 'joshea-beardclub-dev',
+            Bucket: process.env.S3_RESULTS_BUCKET || 'joshea-beardclub-test',
             Key: `renders/${path.basename(resultFile)}`,
             Body: fileStream
         };

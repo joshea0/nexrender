@@ -34,7 +34,8 @@
     "node-dir": "^0.1.11",
     "request": "^2.69.0",
     "shortid": "^2.2.4",
-    "aws-sdk": "^2.157.0"
+    "aws-sdk": "^2.157.0",
+    "fluent-ffmpeg": "^2.1.2"
   },
   "devDependencies": {
     "chai": "^3.5.0",
