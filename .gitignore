@@ -3,7 +3,7 @@ node_modules/
 temp/
 results/
 coverage/
-
+db.json
 # files
 *.log
 
